@@ -13,14 +13,14 @@ PlayState.preload = function ()
         this.game.load.image('target', 'images/target.png');
         if(isMobile)
         {
-            this.game.load.audio('music:battle', 'audio/Busting2.mp3');
+            this.game.load.audio('music:battle', 'audio/Busting2.m4a');
         }
         else
         {
-        this.game.load.audio('music:battle', 'audio/Busting.mp3');
+        this.game.load.audio('music:battle', 'audio/Busting.m4a');
         }
-        this.game.load.audio('sfx:shockwave', 'audio/shockwave.wav');
-        this.game.load.audio('sfx:cannon', 'audio/cannon.wav');
+        this.game.load.audio('sfx:shockwave', 'audio/shockwave.m4a');
+        this.game.load.audio('sfx:cannon', 'audio/cannon.m4a');
 };
 
 // create game entities and set up world here
@@ -85,7 +85,6 @@ PlayState.init = function () {
             {
               this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;  
             }
-            this.game.stage.disableVisibilityChange = true;
 };
 
 PlayState.update = function () {
