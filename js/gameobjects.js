@@ -2,6 +2,7 @@ var tileWidth = 40;
 var tileHeight= 25;
 var megamanDelay;
 var megamanBlocked = false;
+var megamanAttacking = false;
 var lastKey;
 var enemies;
 
@@ -44,8 +45,14 @@ function Megaman(game, x, y)
     this.ypos= y;
     // call Phaser.Sprite constructor
     MovingEntity.call(this, game, x, y, 0, 'megaman');
+    this.animations.add('shoot', [1, 2, 3, 0], 8, false);
+
+    this.events.onAnimationComplete.add(function () 
+    {
+    megamanAttacking=false;
+    }, this);
     // Align sprite
-    this.anchor.set(-0.05, 0.5);
+    this.anchor.set(-0.05, 0.7);
     this.x=(this.xpos*tileWidth)+8;
     this.y=(this.ypos*tileHeight)+97;
     }
@@ -76,6 +83,15 @@ Megaman.prototype.move = function (direction)
     this.x=(this.xpos*tileWidth)+8;
     this.y=(this.ypos*tileHeight)+97;
 };
+Megaman.prototype.shoot = function()
+{
+    if(!megamanAttacking)
+    {
+    this.animations.play('shoot');
+    sfx.cannon.play("", 0, 1, false);
+    megamanAttacking=true;
+    }  
+}
 
 function Mettaur(game, x, y) 
 {
@@ -88,9 +104,19 @@ function Mettaur(game, x, y)
     // Align sprite
     this.anchor.set(0.2, 0.5);
 
+                        this.events.onAnimationComplete.add(function () 
+                    {
+                        shockwave = new Shockwave(this.game, this, this.xpos-1, this.ypos);
+                        this.game.add.existing(shockwave);
+                        enemies.add(shockwave);             
+                        sfx.shockwave.play("", 0, 0.75, false);
+
+                    }, this);
+
     }
 Mettaur.prototype = Object.create(MovingEntity.prototype);
 Mettaur.prototype.constructor = Megaman;
+
 Mettaur.prototype.act = function()
 {
     if(this.game.time.now>this.delay)
@@ -112,12 +138,7 @@ Mettaur.prototype.act = function()
                 {
 
                     this.animations.play('attack');
-                        shockwave = new Shockwave(this.game, this, this.xpos-1, this.ypos);
-
-                        this.game.add.existing(shockwave);
-                        enemies.add(shockwave);
-                        this.delay=this.game.time.now+(this.delayTime);
-                        sfx.shockwave.play("", 0, 1, false);
+                    this.delay=this.game.time.now+(this.delayTime);
 
                 }
                 

@@ -1,3 +1,5 @@
+var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 
 PlayState = {};
 
@@ -5,12 +7,20 @@ PlayState = {};
 PlayState.preload = function ()
  {
         this.game.load.spritesheet('background', 'images/bn3panels.png', 256, 256);
-        this.game.load.image('megaman', 'images/megaman.png');
+        this.game.load.spritesheet('megaman', 'images/megaman.png', 64, 64);
         this.game.load.spritesheet('mettaur', 'images/met.png', 64, 64);
         this.game.load.spritesheet('shockwave', 'images/shockwave.png', 64, 64);
         this.game.load.image('target', 'images/target.png');
+        if(isMobile)
+        {
+            this.game.load.audio('music:battle', 'audio/Busting2.mp3');
+        }
+        else
+        {
         this.game.load.audio('music:battle', 'audio/Busting.mp3');
+        }
         this.game.load.audio('sfx:shockwave', 'audio/shockwave.wav');
+        this.game.load.audio('sfx:cannon', 'audio/cannon.wav');
 };
 
 // create game entities and set up world here
@@ -23,7 +33,8 @@ PlayState.create = function () {
         sfx = 
         {
         battle: this.game.add.audio('music:battle'),
-        shockwave: this.game.add.audio('sfx:shockwave')
+        shockwave: this.game.add.audio('sfx:shockwave'),
+        cannon: this.game.add.audio('sfx:cannon')
     	};
     	sfx.battle.play("", 0, 1, true);
 
@@ -55,20 +66,30 @@ PlayState.init = function () {
         left: Phaser.KeyCode.LEFT,
         right: Phaser.KeyCode.RIGHT,
         up: Phaser.KeyCode.UP,
-        down: Phaser.KeyCode.DOWN
+        down: Phaser.KeyCode.DOWN,
+        z: Phaser.KeyCode.Z
 		});
+
+
 
 
             this.game.renderer.renderSession.roundPixels = true;
             Phaser.Canvas.setImageRenderingCrisp(this.game.canvas)  
 
-    this.game.scale.setUserScale(2, 2, 0, 0);
-    this.game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+          if (!isMobile) 
+          { 
+          this.game.scale.setUserScale(2, 2, 0, 0);  
+          this.game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+          }
+          else
+            {
+              this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;  
+            }
 };
 
 PlayState.update = function () {
 
-        if(!megamanBlocked)
+        if(!megamanBlocked && !megamanAttacking)
     {
     megamanBlocked=true;
     megamanDelay=this.game.time.now+95;    
@@ -103,8 +124,29 @@ PlayState._handleInput = function ()
     else if (this.keys.up.isDown) { // move megaman up
         this.megaman.move(3);
     }
-        else if (this.keys.down.isDown) { // move megaman down
+        else if (this.keys.down.isDown) 
+    { // move megaman down
         this.megaman.move(4);
+    }
+    if (this.keys.z.isDown) 
+    { // Shoot
+        this.megaman.shoot();
+    }
+    if(isMobile)
+    {
+    if(this.game.input.activePointer.isDown)
+    {
+        travelx = parseInt((this.game.input.activePointer.x-8)/tileWidth);
+        travely = parseInt((this.game.input.activePointer.y-97)/tileHeight);
+        if(travelx>-1 && travelx <3 && travely>-1 && travely <3)
+        {
+        this.megaman.moveTo(travelx, travely);
+        }
+        else if(travelx>2)
+        {
+            this.megaman.shoot();
+        }
+    }
     }
 };
 window.onload = function () {
