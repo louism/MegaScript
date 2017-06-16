@@ -85,6 +85,7 @@ PlayState.init = function () {
             {
               this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;  
             }
+            this.game.stage.disableVisibilityChange = true;
 };
 
 PlayState.update = function () {
@@ -153,6 +154,7 @@ window.onload = function () {
     let game = new Phaser.Game(256, 256, Phaser.CANVAS, 'game', this, false, false);
     game.state.add('play', PlayState);
    	game.state.start('play');
+
 
    	
 };
