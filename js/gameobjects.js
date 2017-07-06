@@ -96,26 +96,33 @@ Megaman.prototype.shoot = function()
 function Mettaur(game, x, y) 
 {
     this.canAttack = true;
+    this.attacking=false;
 
     // call Phaser.Sprite constructor
     MovingEntity.call(this, game, x, y, 800, 'mettaur');
 
-    this.animations.add('attack', [1, 2, 3, 0], 10, false);
+    this.animations.add('attack', [1, 2, 3, 4, 5], 15, false);
+    this.animations.add('recover', [6, 7, 0], 15, false);
     // Align sprite
     this.anchor.set(0.2, 0.5);
 
                         this.events.onAnimationComplete.add(function () 
                     {
+                        if(this.attacking)
+                        {
                         shockwave = new Shockwave(this.game, this, this.xpos-1, this.ypos);
                         this.game.add.existing(shockwave);
                         enemies.add(shockwave);             
                         sfx.shockwave.play("", 0, 0.75, false);
+                        this.animations.play('recover');
+                        this.attacking=false;
+                    }
 
                     }, this);
 
     }
 Mettaur.prototype = Object.create(MovingEntity.prototype);
-Mettaur.prototype.constructor = Megaman;
+Mettaur.prototype.constructor = Mettaur;
 
 Mettaur.prototype.act = function()
 {
@@ -138,6 +145,7 @@ Mettaur.prototype.act = function()
                 {
 
                     this.animations.play('attack');
+                    this.attacking=true;
                     this.delay=this.game.time.now+(this.delayTime);
 
                 }
@@ -145,6 +153,45 @@ Mettaur.prototype.act = function()
             }
 
 }
+
+function Gunner(game, x, y) 
+{
+    this.canAttack = true;
+    this.direction = 0;
+
+    // call Phaser.Sprite constructor
+    MovingEntity.call(this, game, x, y, 800, 'gunner');
+    this.aimX=2;
+    this.aimY=this.ypos;
+
+    this.animations.add('attack', [1, 2, 3, 0], 10, false);
+    // Align sprite
+    this.anchor.set(0.4, 0.65);
+
+                        this.events.onAnimationComplete.add(function () 
+                    {   
+                        this.canAttack=true;
+                    }, this);
+
+    }
+Gunner.prototype = Object.create(MovingEntity.prototype);
+Gunner.prototype.constructor = Gunner;
+
+Gunner.prototype.act = function()
+{
+
+    if(this.canAttack)
+                {
+
+                    cannonTarget = new CannonTarget(this.game, this, this.xpos-1, this.ypos);
+                    this.game.add.existing(cannonTarget);             
+                    enemies.add(cannonTarget);
+                    this.delay=this.game.time.now+(this.delayTime);
+                    this.canAttack=false;
+
+                }
+}
+
 
 function Shockwave(game, mettaur, x, y) 
 {
@@ -166,7 +213,7 @@ function Shockwave(game, mettaur, x, y)
     this.anchor.set(0, 0.5);
     }
 Shockwave.prototype = Object.create(MovingEntity.prototype);
-Shockwave.prototype.constructor = Megaman;
+Shockwave.prototype.constructor = Shockwave;
 Shockwave.prototype.act = function()
 {
     if(this.game.time.now>this.delay)
@@ -191,6 +238,87 @@ Shockwave.prototype.act = function()
             }
 
 }
+
+function CannonTarget(game, cannon, x, y) 
+{
+    this.cannon = cannon;
+    this.found = false;
+    cannon.canAttack=false;
+
+
+    // call Phaser.Sprite constructor
+    MovingEntity.call(this, game, x, y, 300, 'cannontarget');
+     this.animations.add('locked', [1, 2, 3, 4], 10, false);
+    this.delay=this.game.time.now+this.delayTime;
+
+    // Align sprite
+    this.anchor.set(0.2, 0.5);
+                            this.events.onAnimationComplete.add(function () 
+                    {
+                                        enemies.remove(this);
+                this.kill(false);
+                this.cannon.animations.play('attack');
+                sfx.cannon.play("", 0, 1, false);
+                    }, this);
+    }
+
+CannonTarget.prototype = Object.create(MovingEntity.prototype);
+CannonTarget.prototype.constructor = CannonTarget;
+CannonTarget.prototype.act = function()
+{
+    if(this.game.time.now>this.delay)
+    {
+                //CannonTarget travels in a straight line
+                if(!this.found)
+                {
+                    if(this.xpos>0)
+                    {                 
+                    this.moveTo(this.xpos-1, this.ypos);
+                    this.setDelayed();
+                    }
+                    else
+                    {
+                    //Reached the end of the map, kill this object.
+                    enemies.remove(this);
+                    this.kill(false);
+                    this.cannon.canAttack=true;
+                    }
+                }
+            }
+            if(this.xpos==gameMegaman.xpos && this.ypos==gameMegaman.ypos)
+            {
+                this.animations.play('locked');
+                this.found=true;
+            }
+        
+}
+
+
+function Shot(game, x, y) 
+{
+
+    // call Phaser.Sprite constructor
+    MovingEntity.call(this, game, x, y, 400, 'shot');
+    this.animations.add('default', [0, 1, 2, 3], 15, false);
+    this.animations.play('default');
+    this.delay=this.game.time.now+this.delayTime;
+    this.target = new Target(this.game, this, this.xpos-1, this.ypos);
+    this.game.add.existing(this.target);
+    this.target.upd();
+
+    this.events.onAnimationComplete.add(function () 
+                    { 
+
+                        this.kill(false);
+                        this.target.kill(false);
+
+                    }, this);
+
+    // Align sprite
+    this.anchor.set(0.2, 0.5);
+    }
+Shot.prototype = Object.create(MovingEntity.prototype);
+Shot.prototype.constructor = Megaman;
 
 function Target(game, owner, x, y) 
 {

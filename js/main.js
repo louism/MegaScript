@@ -9,7 +9,10 @@ PlayState.preload = function ()
         this.game.load.spritesheet('background', 'images/bn3panels.png', 256, 256);
         this.game.load.spritesheet('megaman', 'images/megaman.png', 64, 64);
         this.game.load.spritesheet('mettaur', 'images/met.png', 64, 64);
+        this.game.load.spritesheet('gunner', 'images/gunner.png', 64, 64);
         this.game.load.spritesheet('shockwave', 'images/shockwave.png', 64, 64);
+        this.game.load.spritesheet('shot', 'images/shot.png', 64, 64);
+        this.game.load.spritesheet('cannontarget', 'images/CannonTarget.png', 64, 64);
         this.game.load.image('target', 'images/target.png');
         if(isMobile)
         {
@@ -20,6 +23,7 @@ PlayState.preload = function ()
         this.game.load.audio('music:battle', 'audio/Busting.m4a');
         }
         this.game.load.audio('sfx:shockwave', 'audio/shockwave.m4a');
+        this.game.load.audio('sfx:gun', 'audio/gun.wav');
         this.game.load.audio('sfx:cannon', 'audio/cannon.m4a');
 };
 
@@ -34,7 +38,8 @@ PlayState.create = function () {
         {
         battle: this.game.add.audio('music:battle'),
         shockwave: this.game.add.audio('sfx:shockwave'),
-        cannon: this.game.add.audio('sfx:cannon')
+        cannon: this.game.add.audio('sfx:cannon'),
+        gun: this.game.add.audio('sfx:gun')
     	};
     	sfx.battle.play("", 0, 1, true);
 
@@ -56,8 +61,11 @@ PlayState._spawnCharacters = function () {
     // test Mettaur
     this.mettaur = new Mettaur(this.game, 4, 1);
     this.game.add.existing(this.mettaur);
-
     enemies.add(this.mettaur);
+
+    this.gunner = new Gunner(this.game, 5, 1);
+    this.game.add.existing(this.gunner);
+    enemies.add(this.gunner);
 };
 
 PlayState.init = function () {
