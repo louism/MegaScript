@@ -13,7 +13,9 @@ PlayState.preload = function ()
         this.game.load.spritesheet('shockwave', 'images/shockwave.png', 64, 64);
         this.game.load.spritesheet('shot', 'images/shot.png', 64, 64);
         this.game.load.spritesheet('cannontarget', 'images/CannonTarget.png', 64, 64);
+        this.game.load.spritesheet('blast', 'images/blast.png', 64, 64);
         this.game.load.image('target', 'images/target.png');
+        this.game.load.image('mmbnface', 'images/MMBNFace.png');
         if(isMobile)
         {
             this.game.load.audio('music:battle', 'audio/Busting2.m4a');
@@ -24,7 +26,9 @@ PlayState.preload = function ()
         }
         this.game.load.audio('sfx:shockwave', 'audio/shockwave.m4a');
         this.game.load.audio('sfx:gun', 'audio/gun.wav');
+        this.game.load.audio('sfx:defeat', 'audio/defeat.wav');
         this.game.load.audio('sfx:cannon', 'audio/cannon.m4a');
+        this.game.load.audio('sfx:hurt', 'audio/hurt.m4a');
 };
 
 // create game entities and set up world here
@@ -33,13 +37,17 @@ PlayState.create = function () {
     this.game.add.existing(bg);
     bg.animations.add('a', [0, 1, 2, 3, 4, 5], 5, true);
     bg.animations.play('a');
+        var face = new Phaser.Sprite(this.game, 0, 0, 'mmbnface');
+    this.game.add.existing(face);
     this._loadLevel();
         sfx = 
         {
         battle: this.game.add.audio('music:battle'),
         shockwave: this.game.add.audio('sfx:shockwave'),
         cannon: this.game.add.audio('sfx:cannon'),
-        gun: this.game.add.audio('sfx:gun')
+        gun: this.game.add.audio('sfx:gun'),
+        defeat: this.game.add.audio('sfx:defeat'),
+        hurt: this.game.add.audio('sfx:hurt')
     	};
     	sfx.battle.play("", 0, 1, true);
 
@@ -157,6 +165,31 @@ PlayState._handleInput = function ()
     }
     }
 };
+
+function getEnemyAt(x, y)
+{
+    for(var i=0;i<enemies.length;i++)
+    {
+        element = enemies.getAt(i);
+        if(element.xpos==x && element.ypos==y && !element.passable)
+        {
+            console.log(element.name + " at " + element.xpos + "," + element.ypos);
+            return element;
+        }
+    }
+    return null;
+}
+
+function isMegamanAt(x, y)
+{
+
+        if(gameMegaman.xpos==x && gameMegaman.ypos==y)
+        {
+            return true;
+        }
+    
+    return false;
+}
 window.onload = function () {
     let game = new Phaser.Game(256, 256, Phaser.CANVAS, 'game', this, false, false);
     game.state.add('play', PlayState);
