@@ -1,5 +1,7 @@
 var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
+var won = false;
+var lvl = 1;
+var battlesWon= 0;
 
 PlayState = {};
 
@@ -7,14 +9,28 @@ PlayState = {};
 PlayState.preload = function ()
  {
         this.game.load.spritesheet('background', 'images/bn3panels.png', 256, 256);
-        this.game.load.spritesheet('megaman', 'images/megaman.png', 64, 64);
+        this.game.load.spritesheet('megaman', 'images/megaman.png', 90, 58);
+        this.game.load.spritesheet('spikey', 'images/spikey.png', 70, 54);
+        this.game.load.spritesheet('spikey2', 'images/spikey2.png', 70, 54);
+        this.game.load.spritesheet('spikey3', 'images/spikey3.png', 70, 54);
+        this.game.load.spritesheet('volgear', 'images/volgear.png', 64, 54);
         this.game.load.spritesheet('mettaur', 'images/met.png', 64, 64);
+        this.game.load.spritesheet('mettaur2', 'images/met2.png', 64, 64);
+        this.game.load.spritesheet('mettaur3', 'images/met3.png', 64, 64);
+        this.game.load.spritesheet('watertower', 'images/watertower.png', 64, 64);
+        this.game.load.spritesheet('ratton', 'images/ratton.png', 64, 64);
+        this.game.load.spritesheet('ratton2', 'images/ratton2.png', 64, 64);
+        this.game.load.spritesheet('ratton3', 'images/ratton3.png', 64, 64);
         this.game.load.spritesheet('gunner', 'images/gunner.png', 64, 64);
+        this.game.load.spritesheet('gunner2', 'images/gunner2.png', 64, 64);
+        this.game.load.spritesheet('gunner3', 'images/gunner3.png', 64, 64);
         this.game.load.spritesheet('shockwave', 'images/shockwave.png', 64, 64);
+        this.game.load.spritesheet('fireball', 'images/fireball.png', 64, 64);
         this.game.load.spritesheet('shot', 'images/shot.png', 64, 64);
         this.game.load.spritesheet('cannontarget', 'images/CannonTarget.png', 64, 64);
         this.game.load.spritesheet('blast', 'images/blast.png', 64, 64);
         this.game.load.image('target', 'images/target.png');
+        this.game.load.image('rattonshot', 'images/rattonshot.png');
         this.game.load.image('mmbnface', 'images/MMBNFace.png');
         if(isMobile)
         {
@@ -29,6 +45,7 @@ PlayState.preload = function ()
         this.game.load.audio('sfx:defeat', 'audio/defeat.wav');
         this.game.load.audio('sfx:cannon', 'audio/cannon.m4a');
         this.game.load.audio('sfx:hurt', 'audio/hurt.m4a');
+        this.game.load.audio('sfx:winner', 'audio/winner.m4a');
 };
 
 // create game entities and set up world here
@@ -47,7 +64,8 @@ PlayState.create = function () {
         cannon: this.game.add.audio('sfx:cannon'),
         gun: this.game.add.audio('sfx:gun'),
         defeat: this.game.add.audio('sfx:defeat'),
-        hurt: this.game.add.audio('sfx:hurt')
+        hurt: this.game.add.audio('sfx:hurt'),
+        winner: this.game.add.audio('sfx:winner')
     	};
     	sfx.battle.play("", 0, 1, true);
 
@@ -60,20 +78,15 @@ PlayState._loadLevel = function () {
    
 };
 
-PlayState._spawnCharacters = function () {
+PlayState._spawnCharacters = function () 
+{
     // spawn megaman
     this.megaman = new Megaman(this.game, 1, 1);
     this.game.add.existing(this.megaman);
 
     gameMegaman=this.megaman;
     // test Mettaur
-    this.mettaur = new Mettaur(this.game, 4, 1);
-    this.game.add.existing(this.mettaur);
-    enemies.add(this.mettaur);
-
-    this.gunner = new Gunner(this.game, 5, 1);
-    this.game.add.existing(this.gunner);
-    enemies.add(this.gunner);
+    spawnRandom3(this.game);
 };
 
 PlayState.init = function () {
@@ -122,9 +135,26 @@ PlayState.update = function () {
     enemies.forEach(function(enemy)
     {
     	enemy.act();
+
     })
+    enemies.sort('y', Phaser.Group.SORT_ASCENDING);
 
-
+    if(enemies.length==0 && !won)
+    {
+        
+        sfx.winner.play("", 0, 1, false);
+        battlesWon++;
+        gameMegaman.heal(50);
+        if(battlesWon==1)
+        {
+            lvl++;
+        }
+        else if(battlesWon==4)
+        {
+            lvl++;
+        }
+        spawnRandom3();
+    }
 };
 
 PlayState._handleInput = function () 
@@ -173,11 +203,30 @@ function getEnemyAt(x, y)
         element = enemies.getAt(i);
         if(element.xpos==x && element.ypos==y && !element.passable)
         {
-            console.log(element.name + " at " + element.xpos + "," + element.ypos);
             return element;
         }
     }
     return null;
+}
+
+function isEnemyAt(x, y)
+{
+        for(var i=0;i<enemies.length;i++)
+    {
+        element = enemies.getAt(i);
+        if(element.xpos==x && element.ypos==y && !element.passable)
+        {
+
+            return true;
+        }
+    }
+    if(x>5 || x<3 || y>2 || y<0)
+    {
+
+        return true;
+    }
+
+    return false;
 }
 
 function isMegamanAt(x, y)
@@ -191,9 +240,10 @@ function isMegamanAt(x, y)
     return false;
 }
 window.onload = function () {
-    let game = new Phaser.Game(256, 256, Phaser.CANVAS, 'game', this, false, false);
+    game = new Phaser.Game(256, 256, Phaser.CANVAS, 'game', this, false, false);
     game.state.add('play', PlayState);
    	game.state.start('play');
+    gameInstance = game;
 
 
    	
