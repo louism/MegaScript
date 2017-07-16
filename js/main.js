@@ -145,11 +145,11 @@ PlayState.update = function () {
         sfx.winner.play("", 0, 1, false);
         battlesWon++;
         gameMegaman.heal(50);
-        if(battlesWon==1)
+        if(battlesWon==5)
         {
             lvl++;
         }
-        else if(battlesWon==4)
+        else if(battlesWon==10)
         {
             lvl++;
         }
