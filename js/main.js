@@ -14,6 +14,7 @@ PlayState.preload = function ()
         this.game.load.spritesheet('spikey2', 'images/spikey2.png', 70, 54);
         this.game.load.spritesheet('spikey3', 'images/spikey3.png', 70, 54);
         this.game.load.spritesheet('volgear', 'images/volgear.png', 64, 54);
+        this.game.load.spritesheet('bass', 'images/bass.png', 64, 74);
         this.game.load.spritesheet('mettaur', 'images/met.png', 64, 64);
         this.game.load.spritesheet('mettaur2', 'images/met2.png', 64, 64);
         this.game.load.spritesheet('mettaur3', 'images/met3.png', 64, 64);
@@ -25,6 +26,7 @@ PlayState.preload = function ()
         this.game.load.spritesheet('gunner2', 'images/gunner2.png', 64, 64);
         this.game.load.spritesheet('gunner3', 'images/gunner3.png', 64, 64);
         this.game.load.spritesheet('shockwave', 'images/shockwave.png', 64, 64);
+        this.game.load.spritesheet('darkwave', 'images/darkwave.png', 64, 64);
         this.game.load.spritesheet('fireball', 'images/fireball.png', 64, 64);
         this.game.load.spritesheet('shot', 'images/shot.png', 64, 64);
         this.game.load.spritesheet('cannontarget', 'images/CannonTarget.png', 64, 64);
@@ -40,6 +42,7 @@ PlayState.preload = function ()
         {
         this.game.load.audio('music:battle', 'audio/Busting.m4a');
         }
+        this.game.load.audio('music:finalbattle', 'audio/finalbattle.m4a');
         this.game.load.audio('sfx:shockwave', 'audio/shockwave.m4a');
         this.game.load.audio('sfx:gun', 'audio/gun.wav');
         this.game.load.audio('sfx:defeat', 'audio/defeat.wav');
@@ -65,7 +68,8 @@ PlayState.create = function () {
         gun: this.game.add.audio('sfx:gun'),
         defeat: this.game.add.audio('sfx:defeat'),
         hurt: this.game.add.audio('sfx:hurt'),
-        winner: this.game.add.audio('sfx:winner')
+        winner: this.game.add.audio('sfx:winner'),
+        finalbattle: this.game.add.audio('music:finalbattle')
     	};
     	sfx.battle.play("", 0, 1, true);
 
@@ -86,7 +90,10 @@ PlayState._spawnCharacters = function ()
 
     gameMegaman=this.megaman;
     // test Mettaur
+    
     spawnRandom3(this.game);
+    
+    
 };
 
 PlayState.init = function () {
@@ -145,15 +152,25 @@ PlayState.update = function () {
         sfx.winner.play("", 0, 1, false);
         battlesWon++;
         gameMegaman.heal(50);
-        if(battlesWon==5)
+        if(battlesWon==2)
         {
             lvl++;
         }
-        else if(battlesWon==10)
+        else if(battlesWon==3)
         {
             lvl++;
         }
+
+        if(battlesWon<3)
+        {
         spawnRandom3();
+        }
+        else
+        {
+            sfx.battle.stop();
+            sfx.finalbattle.play("", 0, 0.5, true);
+            spawnBass();
+        }
     }
 };
 

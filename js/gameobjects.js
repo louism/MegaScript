@@ -106,8 +106,7 @@ function Megaman(game, x, y)
     this.text.x=42;
     this.text.y=-3;
     this.animations.add('shoot', [1, 2, 3, 4, 5, 6, 7, 0], 12, false);
-    this.animations.add('shoot2', [1, 2, 3, 4, 5, 6, 7, 0], 18, false);
-    this.animations.add('shoot3', [21, 22, 23], 24, false);
+    this.animations.add('shoot2', [1, 2, 3, 4, 5, 6, 7, 0], 14, false);
     this.animations.add('hurt', [8, 9, 10, 0], 9 , false);
 
 
@@ -188,16 +187,12 @@ Megaman.prototype.shoot = function()
     this.animations.play('shoot');
     sfx.cannon.play("", 0, 1, false);
     }
-    else if(lvl==2)
+    else
     {
      this.animations.play('shoot2');
      sfx.cannon.play("", 0, 1, false);   
     }
-    else
-    {
-    this.animations.play('shoot3');
-    sfx.gun.play("", 0, 2, false);     
-    }
+
     
     megamanAttacking=true;
         for(z = this.xpos+1;z<6;z++)
@@ -206,13 +201,17 @@ Megaman.prototype.shoot = function()
 
         if(enem != null)
         {
-            if(lvl==2)
+            if(lvl==1)
+            {
+                enem.damage(20);
+            }
+            else if(lvl==2)
             {
                 enem.damage(40);
             }
             else
             {
-            enem.damage(20);    
+            enem.damage(60);    
             }
             break;
         }
@@ -236,18 +235,22 @@ function Shockwave(game, mettaur, level, x, y)
     mettaur.canAttack=false;
     this.name = "Shockwave";
     this.level = level;
+    console.log(level);
 
 
 
     // call Phaser.Sprite constructor
-        if(level==3)
+        if(level==4)
     {
-    GameObject.call(this, game, x, y, 100, 'shockwave', 0);
-    console.log("met3");
+    GameObject.call(this, game, x, y, 250, 'darkwave', 0);
+    }
+    else if(level==3)
+    {
+    GameObject.call(this, game, x, y, 200, 'shockwave', 0);
     }
     else if(level==2)
     {
-    GameObject.call(this, game, x, y, 200, 'shockwave', 0);
+    GameObject.call(this, game, x, y, 300, 'shockwave', 0);
     }
     else
     {
@@ -280,9 +283,15 @@ Shockwave.prototype.act = function()
                 this.target.upd();
                     if(isMegamanAt(this.xpos, this.ypos))
                     {
-                    if(this.level==3)
+
+                    if(this.level==4)
                     {
-                    gameMegaman.damage(100);
+                    gameMegaman.damage(60);
+          
+                    }
+                    else if(this.level==3)
+                    {
+                    gameMegaman.damage(80);
           
                     }
                     else if(this.level==2)
@@ -486,7 +495,7 @@ RattonShot.prototype.act = function()
                         {
                         this.setGrid(this.xpos, this.ypos+this.dir);    
                         }
-                    if(this.xpos==gameMegaman.xpos && !this.turn)
+                    if(this.xpos<=gameMegaman.xpos && !this.turn)
                     {
                         this.turn=true;
                         this.x-=10;
@@ -518,11 +527,11 @@ RattonShot.prototype.act = function()
                         {
                                                                     if(this.level==3)
     {
-gameMegaman.damage(100);
+gameMegaman.damage(80);
     }
     else if(this.level==2)
     {
-gameMegaman.damage(50);
+gameMegaman.damage(40);
     }
     else
     {
@@ -645,6 +654,10 @@ function Shot(game, x, y)
 
                         this.kill(false);
                         this.target.kill(false);
+                        if(this.xpos == gameMegaman.xpos && this.ypos == gameMegaman.ypos)
+                        {
+                            gameMegaman.damage(25);
+                        }
 
                     }, this);
 
@@ -653,6 +666,9 @@ function Shot(game, x, y)
     }
 Shot.prototype = Object.create(GameObject.prototype);
 Shot.prototype.constructor = Megaman;
+Shot.prototype.act = function()
+{
+}
 
 function Blast(game, x, y) 
 {

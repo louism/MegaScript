@@ -39,6 +39,13 @@ function spawnMettaur(x, y, l)
     enemies.add(enemy);
 }
 
+function spawnBass(x, y)
+{
+	this.enemy = new Bass(gameInstance, x, y);
+	gameInstance.add.existing(enemy);
+    enemies.add(enemy);
+}
+
 function spawnGunner(x, y, l)
 {
 	this.enemy = new Gunner(gameInstance, x, y, l);
