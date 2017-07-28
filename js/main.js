@@ -14,11 +14,15 @@ PlayState.preload = function ()
         this.game.load.spritesheet('spikey2', 'images/spikey2.png', 70, 54);
         this.game.load.spritesheet('spikey3', 'images/spikey3.png', 70, 54);
         this.game.load.spritesheet('volgear', 'images/volgear.png', 64, 54);
+        this.game.load.spritesheet('volgear2', 'images/volgear2.png', 64, 54);
+        this.game.load.spritesheet('volgear3', 'images/volgear3.png', 64, 54);
+        this.game.load.spritesheet('darksword', 'images/darksword.png', 100, 100);
         this.game.load.spritesheet('bass', 'images/bass.png', 64, 74);
         this.game.load.spritesheet('mettaur', 'images/met.png', 64, 64);
         this.game.load.spritesheet('mettaur2', 'images/met2.png', 64, 64);
         this.game.load.spritesheet('mettaur3', 'images/met3.png', 64, 64);
         this.game.load.spritesheet('watertower', 'images/watertower.png', 64, 64);
+        this.game.load.spritesheet('shadowflame', 'images/shadowflame.png', 64, 64);
         this.game.load.spritesheet('ratton', 'images/ratton.png', 64, 64);
         this.game.load.spritesheet('ratton2', 'images/ratton2.png', 64, 64);
         this.game.load.spritesheet('ratton3', 'images/ratton3.png', 64, 64);
@@ -28,6 +32,7 @@ PlayState.preload = function ()
         this.game.load.spritesheet('shockwave', 'images/shockwave.png', 64, 64);
         this.game.load.spritesheet('darkwave', 'images/darkwave.png', 64, 64);
         this.game.load.spritesheet('fireball', 'images/fireball.png', 64, 64);
+        this.game.load.spritesheet('bassshot', 'images/bassshot.png', 64, 64);
         this.game.load.spritesheet('shot', 'images/shot.png', 64, 64);
         this.game.load.spritesheet('cannontarget', 'images/CannonTarget.png', 64, 64);
         this.game.load.spritesheet('blast', 'images/blast.png', 64, 64);
@@ -45,6 +50,9 @@ PlayState.preload = function ()
         this.game.load.audio('music:finalbattle', 'audio/finalbattle.m4a');
         this.game.load.audio('sfx:shockwave', 'audio/shockwave.m4a');
         this.game.load.audio('sfx:gun', 'audio/gun.wav');
+        this.game.load.audio('sfx:darksword', 'audio/darksword.m4a');
+        this.game.load.audio('sfx:darkcharge', 'audio/darkcharge.m4a');
+        this.game.load.audio('sfx:burn', 'audio/burn.wav');
         this.game.load.audio('sfx:defeat', 'audio/defeat.wav');
         this.game.load.audio('sfx:cannon', 'audio/cannon.m4a');
         this.game.load.audio('sfx:hurt', 'audio/hurt.m4a');
@@ -66,10 +74,13 @@ PlayState.create = function () {
         shockwave: this.game.add.audio('sfx:shockwave'),
         cannon: this.game.add.audio('sfx:cannon'),
         gun: this.game.add.audio('sfx:gun'),
+        darksword: this.game.add.audio('sfx:darksword'),
+        burn: this.game.add.audio('sfx:burn'),
         defeat: this.game.add.audio('sfx:defeat'),
         hurt: this.game.add.audio('sfx:hurt'),
         winner: this.game.add.audio('sfx:winner'),
-        finalbattle: this.game.add.audio('music:finalbattle')
+        finalbattle: this.game.add.audio('music:finalbattle'),
+        darkcharge: this.game.add.audio('sfx:darkcharge'),
     	};
     	sfx.battle.play("", 0, 1, true);
 
@@ -91,7 +102,7 @@ PlayState._spawnCharacters = function ()
     gameMegaman=this.megaman;
     // test Mettaur
     
-    spawnRandom3(this.game);
+   spawnRandom3(this.game);
     
     
 };
@@ -151,22 +162,25 @@ PlayState.update = function () {
         
         sfx.winner.play("", 0, 1, false);
         battlesWon++;
-        gameMegaman.heal(50);
-        if(battlesWon==2)
+        
+        if(battlesWon==3)
         {
+            gameMegaman.setHP(500);
             lvl++;
         }
-        else if(battlesWon==3)
+        else if(battlesWon==6)
         {
+            gameMegaman.setHP(1000);
             lvl++;
         }
 
-        if(battlesWon<3)
+        if(battlesWon<=10)
         {
         spawnRandom3();
         }
         else
         {
+            gameMegaman.setHP(750);
             sfx.battle.stop();
             sfx.finalbattle.play("", 0, 0.5, true);
             spawnBass();

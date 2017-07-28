@@ -9,11 +9,11 @@ function Mettaur(game, x, y, level)
     // call Phaser.Sprite constructor
     if(level==3)
     {
-    GameObject.call(this, game, x, y, 200, 'mettaur3', 120);
+    GameObject.call(this, game, x, y, 200, 'mettaur3', 240);
     }
     else if(level==2)
     {
-    GameObject.call(this, game, x, y, 400, 'mettaur2', 80);
+    GameObject.call(this, game, x, y, 400, 'mettaur2', 120);
     }
     else
     {
@@ -85,7 +85,7 @@ Mettaur.prototype.act = function()
 
 }
 
-function Volgear(game, x, y) 
+function Volgear(game, x, y, level) 
 {
     this.canAttack = true;
     this.attacking=false;
@@ -93,7 +93,19 @@ function Volgear(game, x, y)
     this.moves=5;
 
     // call Phaser.Sprite constructor
+        if(level==3)
+    {
+    GameObject.call(this, game, x, y, 700, 'volgear3', 280);
+    }
+    else if(level==2)
+    {
+    GameObject.call(this, game, x, y, 700, 'volgear2', 160);
+    }
+    else
+    {
     GameObject.call(this, game, x, y, 700, 'volgear', 80);
+    }  
+    
 
     this.animations.add('attack', [3, 4, 5, 6, 7], 10, false);
     this.animations.add('idle', [0, 1, 2], 10, true);
@@ -175,7 +187,7 @@ function Spikey(game, x, y, level)
     // call Phaser.Sprite constructor
         if(level==3)
     {
-    GameObject.call(this, game, x, y, 200, 'spikey3', 280);
+    GameObject.call(this, game, x, y, 300, 'spikey3', 220);
     }
     else if(level==2)
     {
@@ -215,9 +227,7 @@ Spikey.prototype.constructor = Mettaur;
 Spikey.prototype.act = function()
 {
     if(this.game.time.now>this.delay)
-    {
-        //Mettaur always tries to go to the same row as MegaMan
-        
+    { 
                     if(this.moves>0)
                 {                   
                     var xm = Math.floor((Math.random() * 3) + 1)+2;
@@ -253,7 +263,7 @@ function Ratton(game, x, y, level)
     // call Phaser.Sprite constructor
             if(level==3)
     {
-    GameObject.call(this, game, x, y, 250, 'ratton3', 120);
+    GameObject.call(this, game, x, y, 350, 'ratton3', 120);
     }
     else if(level==2)
     {

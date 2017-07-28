@@ -1,23 +1,22 @@
 function spawnRandom(x, y, l, game)
 {
 	r = Math.floor((Math.random() * 5) + 1);
-	lvl2 = Math.floor((Math.random() * lvl) + 1);
 	switch(r)
 	{
 		case 1:
-			spawnMettaur(x, y, lvl2);
+			spawnMettaur(x, y, lvl);
 			break;
 		case 2:
-			spawnGunner(x, y, lvl2);
+			spawnGunner(x, y, lvl);
 			break;
 		case 3:
-			spawnRatton(x, y, lvl2);
+			spawnRatton(x, y, lvl);
 			break;
 		case 4:
-			spawnVolgear(x, y, 0);
+			spawnVolgear(x, y, lvl);
 			break;
 		case 5:
-			spawnSpikey(x, y, lvl2);
+			spawnSpikey(x, y, lvl);
 			break;
 		default:
 			spawnMettaur(x, y, 0);
