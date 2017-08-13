@@ -94,11 +94,68 @@ GameObject.prototype.setHP= function (hp)
     
 };
 
+function CurrentChip(game) 
+{
+
+    this.blocked = false;
+    this.passable = false;
+    this.chipID = 0;
+    
+
+    // call Phaser.Sprite constructor
+    Phaser.Sprite.call(this, game, 0, 0, 'chips');
+    this.x=192;
+    this.y=0;
+ 
+    style = new Object;
+    style.fill="white";
+    style.stroke="black";
+    style.font="9pt Helvetica";
+    style.strokeThickness=4;
+    this.text = game.add.text(this.x-2, this.y+52, "Cannon", style);
+
+    }
+CurrentChip.prototype = Object.create(Phaser.Sprite.prototype);
+CurrentChip.prototype.constructor = GameObject;
+
+CurrentChip.prototype.next = function()
+{
+    this.chipID++;
+    if(this.chipID>3)
+    {
+        this.chipID=0;
+    }
+
+    if(this.chipID==0)
+    {
+        this.text.text="Cannon"
+        this.frame=0;
+    }
+    else if(this.chipID==1)
+    {
+        this.frame=3;
+        this.text.text="Shockwave";
+    }
+    else if(this.chipID==2)
+    {
+        this.frame=1;
+        this.text.text="Heatshot";
+    }
+        else if(this.chipID==3)
+    {
+        this.frame=4;
+        this.text.text="Lifesword";
+    }
+}
+
 
 function Megaman(game, x, y) 
 {
     this.xpos =x;
     this.ypos= y;
+    this.alive=true;
+    this.canAttack=true;
+    this.name = "Megaman";
     this.invincible=false;
     // call Phaser.Sprite constructor
     GameObject.call(this, game, x, y, 0, 'megaman', 100);
@@ -107,6 +164,8 @@ function Megaman(game, x, y)
     this.animations.add('shoot', [1, 2, 3, 4, 5, 6, 7, 0], 12, false);
     this.animations.add('shoot2', [1, 2, 3, 4, 5, 6, 7, 0], 14, false);
     this.animations.add('hurt', [8, 9, 10, 0], 9 , false);
+    this.animations.add('swipe', [11, 12, 13, 0], 9 , false);
+    this.animations.add('slash', [14, 15, 16, 17, 0, 0], 11 , false);
 
 
 
@@ -150,7 +209,7 @@ Megaman.prototype.move = function (direction)
 
 Megaman.prototype.damage = function(dm)
 {
-    if(!this.invincible)
+    if(!this.invincible && this.alive)
     {
     this.hp = this.hp - dm;
     if(this.hp>0)
@@ -168,6 +227,7 @@ Megaman.prototype.damage = function(dm)
     }
     else
     {
+        this.alive=false;
         this.text.text = 0;
         sfx.defeat.play("", 0, 1, false);
         enemies.remove(this);
@@ -177,10 +237,14 @@ Megaman.prototype.damage = function(dm)
     }
 }
 }
-Megaman.prototype.shoot = function()
+Megaman.prototype.attack = function()
 {
     if(!megamanAttacking)
     {
+    
+    if(currentChip.chipID==0)
+    {
+        megamanAttacking=true;
     if(lvl==1)
     {
     this.animations.play('shoot');
@@ -193,7 +257,7 @@ Megaman.prototype.shoot = function()
     }
 
     
-    megamanAttacking=true;
+    
         for(z = this.xpos+1;z<6;z++)
     {
         enem = getEnemyAt(z, this.ypos);
@@ -213,8 +277,44 @@ Megaman.prototype.shoot = function()
             enem.damage(60);    
             }
             break;
+                }
+            }
         }
-    }
+        else if(this.canAttack)
+        {
+            
+            if(currentChip.chipID==1)
+            {
+                this.animations.play('swipe');
+            shockwave = new Shockwave(this.game, this, 3, this.xpos+1, this.ypos);
+            this.game.add.existing(shockwave);
+            enemies.add(shockwave);             
+            sfx.shockwave.play("", 0, 0.75, false);
+            megamanAttacking=true;
+
+            }
+            else if(currentChip.chipID==2)
+            {
+                this.animations.play('swipe');
+            fireball = new Fireball(this.game, this.xpos+1, this.ypos, 5);
+            this.game.add.existing(fireball);
+            enemies.add(fireball);             
+            sfx.shockwave.play("", 0, 0.75, false);   
+            this.canAttack=false;
+            megamanAttacking=true;
+            }
+            else if(currentChip.chipID==3)
+            {
+                this.animations.play('slash');
+            slash = new Slash(this.game, this.xpos+1, this.ypos+1, true);
+            this.game.add.existing(slash);
+            enemies.add(slash);             
+            sfx.darksword.play("", 0, 0.9, false); 
+             this.canAttack=false;
+             megamanAttacking=true;
+            
+            }
+        }
     }  
 }
 Megaman.prototype.moveTo = function (x1, y1)
@@ -230,10 +330,10 @@ Megaman.prototype.moveTo = function (x1, y1)
 
 function Shockwave(game, mettaur, level, x, y) 
 {
-    this.mettaur = mettaur;
-    mettaur.canAttack=false;
+
     this.name = "Shockwave";
     this.level = level;
+    this.first=true;
 
 
 
@@ -255,17 +355,34 @@ function Shockwave(game, mettaur, level, x, y)
     {
     GameObject.call(this, game, x, y, 400, 'shockwave', 0);
     }   
+
     // Shockwave has 1 animation
     this.passable=true;
     this.animations.add('default', [0, 1, 2, 3], 10, true);
     this.animations.play('default');
     this.delay=this.game.time.now+this.delayTime;
-    this.target = new Target(this.game, this, this.xpos-1, this.ypos);
+    this.target = new Target(this.game, this, this.xpos+this.direction, this.ypos);
     this.game.add.existing(this.target);
     this.target.upd();
 
     // Align sprite
     this.anchor.set(0, 0.5);
+
+        if(mettaur.name == "Megaman")
+    {
+        this.direction = 1;
+        this.scale.x = -1;
+        this.anchor.set(0.7, 0.5);
+        mettaur.canAttack=false;
+    }
+    else
+    {
+    
+    
+    this.direction = -1;
+    }
+    this.mettaur = mettaur;
+
     }
 Shockwave.prototype = Object.create(GameObject.prototype);
 Shockwave.prototype.constructor = Shockwave;
@@ -274,13 +391,27 @@ Shockwave.prototype.act = function()
     if(this.game.time.now>this.delay)
     {
                 //Shockwave travels in a straight line
-                if(this.xpos>0)
-                {                 
-                this.moveTo(this.xpos-1, this.ypos);
+                if(this.xpos>0 && this.xpos<5)
+                {
+                this.moveTo(this.xpos+this.direction, this.ypos);
+                this.damaged=false;
                 sfx.shockwave.play("", 0, 1, false);
                 this.setDelayed();
                 this.target.upd();
-                    if(isMegamanAt(this.xpos, this.ypos))
+
+                }
+                else
+                {
+                //Reached the end of the map, kill this object.
+                    sfx.shockwave.play("", 0, 1, false);
+                    enemies.remove(this);
+                    this.kill(false);
+                    this.target.kill(false);
+                    this.mettaur.canAttack=true;
+                    
+                }
+            }
+                                if(isMegamanAt(this.xpos, this.ypos))
                     {
 
                     if(this.level==4)
@@ -301,29 +432,29 @@ Shockwave.prototype.act = function()
                     {
                     gameMegaman.damage(20);
                     }     
-                }
-                }
-                else
-                {
-                //Reached the end of the map, kill this object.
-                    sfx.shockwave.play("", 0, 1, false);
-                    enemies.remove(this);
-                    this.kill(false);
-                    this.target.kill(false);
-                    this.mettaur.canAttack=true;
-                }
-            }
+                    }
+                    else if(this.direction==1 && !this.damaged)
+                    {
+                        enemy = getEnemyAt(this.xpos, this.ypos);
+                        if(enemy!= null)
+                        {
+                            enemy.damage(40);
+                            this.damaged=true;
+                        }
+                    }
 
 }
 
-function ShadowFlame(game, x, y) 
+function ShadowFlame(game, x, y, level) 
 {
 
     this.name = "Shadowflame";
 
     // call Phaser.Sprite constructor
 
-    GameObject.call(this, game, x, y, 250, 'shadowflame', 0);
+    GameObject.call(this, game, x, y, 100, 'shadowflame', 0);
+
+    
     
     // Shockwave has 1 animation
     this.passable=true;
@@ -348,7 +479,7 @@ function ShadowFlame(game, x, y)
     
 
     // Align sprite
-    this.anchor.set(0.17, 0.5);
+    this.anchor.set(0.19, 0.5);
 }
     
 ShadowFlame.prototype = Object.create(GameObject.prototype);
@@ -368,19 +499,31 @@ ShadowFlame.prototype.act = function()
 }
 
 
-function Watertower(game, mettaur, x, y) 
+function Firetower(game, mettaur, x, y, level) 
 {
     this.mettaur = mettaur;
     mettaur.canAttack=false;
-    this.name = "Watertower";
+    this.name = "firetower";
+    this.level=level;
 
-
+    sfx.burn.play("", 0, 1, false);
 
     // call Phaser.Sprite constructor
-    GameObject.call(this, game, x, y, 600, 'watertower');
+        if(level==3)
+    {
+    GameObject.call(this, game, x, y, 250, 'shadowflame', 0);
+    }
+    else if(level==2)
+    {
+    GameObject.call(this, game, x, y, 360, 'shadowflame', 0);
+    }
+    else
+    {
+    GameObject.call(this, game, x, y, 500, 'shadowflame', 0);
+    }  
     // WaterTower has 1 animation
     this.passable=true;
-    this.animations.add('default', [0, 1, 2, 3, 4, 3, 2, 1, 0], 15, true);
+    this.animations.add('default', [0, 1, 2, 1, 0], 15, true);
     this.animations.play('default');
     this.delay=this.game.time.now+this.delayTime;
     this.target = new Target(this.game, this, this.xpos-1, this.ypos);
@@ -390,9 +533,9 @@ function Watertower(game, mettaur, x, y)
     // Align sprite
     this.anchor.set(0.2, 0.5);
     }
-Watertower.prototype = Object.create(GameObject.prototype);
-Watertower.prototype.constructor = Shockwave;
-Watertower.prototype.act = function()
+Firetower.prototype = Object.create(GameObject.prototype);
+Firetower.prototype.constructor = Shockwave;
+Firetower.prototype.act = function()
 {
     if(this.game.time.now>this.delay)
     {
@@ -411,35 +554,62 @@ Watertower.prototype.act = function()
                 {
                 this.moveTo(this.xpos-1, this.ypos+1);   
                 }
-                sfx.shockwave.play("", 0, 1, false);
+                sfx.burn.play("", 0, 1, false);
                 this.setDelayed();
                 this.target.upd();
-                                if(isMegamanAt(this.xpos, this.ypos))
-                {
-                    gameMegaman.damage(20);
-                }
+
                 }
                 else
                 {
                 //Reached the end of the map, kill this object.
-                    sfx.shockwave.play("", 0, 1, false);
+                    sfx.burn.play("", 0, 1, false);
                     enemies.remove(this);
                     this.kill(false);
                     this.target.kill(false);
                     this.mettaur.canAttack=true;
                 }
             }
+                                            if(isMegamanAt(this.xpos, this.ypos))
+                    {
+
+                    if(this.level==4)
+                    {
+                    gameMegaman.damage(60);
+          
+                    }
+                    else if(this.level==3)
+                    {
+                    gameMegaman.damage(70);
+          
+                    }
+                    else if(this.level==2)
+                    {
+                    gameMegaman.damage(50);
+                    }   
+                    else
+                    {
+                    gameMegaman.damage(20);
+                    }     
+                    }
 
 }
 
-function Fireball(game, x, y, level) 
+function Fireball(game, x, y, level, megaman) 
 {
     this.name = "Fireball";
     this.level = level;
+    if(megaman = true)
+    {
+        this.megaman=true;
+    }
+    else
+    {
+        this.megaman=false;
+    }
 
 
     // call Phaser.Sprite constructor
-            if(level<4)
+            if(level<4 || level==5)
     {
         GameObject.call(this, game, x, y, 400, 'fireball');
     }
@@ -450,29 +620,41 @@ function Fireball(game, x, y, level)
     // Shockwave has 1 animation
     this.passable=true;
 
+
     this.travelDuration=10;
     this.animations.add('default', [0, 1, 2], 10, true);
     this.animations.play('default');
     this.delay=this.game.time.now+this.delayTime;
-
+    this.anchor.set(0.7, 0.5);
     // Align sprite
-    this.anchor.set(0, 0.7);
+    
+    if(this.level != 5)
+    {
+        this.direction = -1;
+        
+        this.anchor.set(0, 0.7);
+    }
+    else
+    {
+    this.direction = 1;
+    this.scale.x = -1;
+    }
     }
 Fireball.prototype = Object.create(GameObject.prototype);
 Fireball.prototype.constructor = Fireball;
 Fireball.prototype.act = function()
 {
+
                 //Fireball travels in a straight line at 10 px per delay.
 
                 if(this.travelDuration<=0)
                 {
                     this.travelDuration=20;
 
-                    if(this.xpos>0)
+                    if(this.xpos>0 && this.xpos<=5)
                     {                 
-                    this.setGrid(this.xpos-1, this.ypos);
+                    this.setGrid(this.xpos+(this.direction), this.ypos);
                     this.setDelayed();
-
 
                     }
                 else
@@ -480,7 +662,10 @@ Fireball.prototype.act = function()
                 //Reached the end of the map, kill this object.
                     enemies.remove(this);
                     this.kill(false);
-    
+                            if(this.megaman)
+                            {
+                            gameMegaman.canAttack=true;
+                            }
                 }
 
             }
@@ -504,22 +689,48 @@ gameMegaman.damage(20);
     {
 gameMegaman.damage(10);
     }   
-                
+                            enemies.remove(this);
+                            this.kill(false);
                 }
-                        if(this.level==3)
+                else if(this.direction==1)
+                {
+
+                        enemy = getEnemyAt(this.xpos, this.ypos);
+                        if(enemy!= null)
+                        {
+                            enemy.damage(50);
+                            enemy2 = getEnemyAt(this.xpos+1, this.ypos);
+                            if(enemy2!= null)
+                            {
+                            enemy2.damage(50);
+                            }
+                            enemies.remove(this);
+                            this.kill(false);
+                            if(this.megaman)
+                            {
+                            gameMegaman.canAttack=true;
+                            }
+                        }
+                }
+    if(this.level==5)
     {
-    this.x-=6;
-    this.travelDuration-=3;
+    this.x+=4*this.direction;
+    this.travelDuration-=2*this.direction;
+    }
+    else if(this.level==3)
+    {
+    this.x+= 6*this.direction;
+    this.travelDuration+=3*this.direction;
     }
     else if(this.level==2 || this.level==4)
     {
-    this.x-=4;
-    this.travelDuration-=2;
+    this.x+=4*this.direction;
+    this.travelDuration+=2*this.direction;
     }
     else
     {
-    this.x-=2;
-    this.travelDuration-=1;
+    this.x+=2*this.direction;
+    this.travelDuration+=this.direction;
     }   
                 
 }
@@ -613,15 +824,12 @@ gameMegaman.damage(15);
                 this.travelDuration-=1*this.level;
 }
 
-function Slash(game, x, y) 
+function Slash(game, x, y, megaman) 
 {
+    this.megaman=megaman;
+    this.attacked=false;
+
     this.name = "Slash";
-    this.turn = false;
-
-
-
-
-
     // call Phaser.Sprite constructor
     GameObject.call(this, game, x, y, 400, 'darksword');
     this.passable=true;
@@ -634,22 +842,24 @@ function Slash(game, x, y)
                     {
                     enemies.remove(this);
                     this.kill(false);
-
+                    gameMegaman.canAttack=true;
                     }, this);
-
-    this.travelDuration=10;
-    this.delay=this.game.time.now+this.delayTime;
-
 
     // Align sprite
     this.anchor.set(0, 0.3);
+    if(this.megaman)
+    {
+        this.anchor.set(0.7, 0.7);
+        this.scale.x = -1;
+    }
     }
 Slash.prototype = Object.create(GameObject.prototype);
-Slash.prototype.constructor = Fireball;
+Slash.prototype.constructor = Slash;
 Slash.prototype.act = function()
 {
 
-
+if(!this.megaman)
+{
 if(isMegamanAt(this.xpos, this.ypos) || isMegamanAt(this.xpos+1, this.ypos)||
     isMegamanAt(this.xpos, this.ypos+1) || isMegamanAt(this.xpos+1, this.ypos+1)||
     isMegamanAt(this.xpos, this.ypos+2) || isMegamanAt(this.xpos+1, this.ypos+2))
@@ -657,6 +867,28 @@ if(isMegamanAt(this.xpos, this.ypos) || isMegamanAt(this.xpos+1, this.ypos)||
     gameMegaman.damage(60);
 
     }
+}
+else
+{   
+    if(!this.attacked)
+    {
+                        for(i = 0;i<2;i++)
+                        {
+                            for(j = -2; j<1;j++)
+                            {
+                         enemy = getEnemyAt(this.xpos+i, this.ypos+j);
+                         x1 = this.xpos+i;
+                         y1 = this.ypos+j;
+
+                        if(enemy!= null)
+                        {
+                            enemy.damage(50);
+                        }
+                    }
+                    }
+                    this.attacked=true;
+}
+}
 }
 
 

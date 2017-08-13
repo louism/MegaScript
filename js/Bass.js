@@ -13,7 +13,7 @@ function Bass(game, x, y)
     this.buster=false;
 
     // call Phaser.Sprite constructor
-    GameObject.call(this, game, x, y, 400, 'bass', 1500);
+    GameObject.call(this, game, x, y, 400, 'bass', 2500);
     
     this.animations.add('attack', [0, 1], 8, false);
     this.animations.add('buster', [2, 3], 8, false);
@@ -100,7 +100,7 @@ function Bass(game, x, y)
                     }
                     else if(this.darkSword)
                     {
-                        bassAttack = new Slash(this.game, 1, 0);
+                        bassAttack = new Slash(this.game, 1, 0, false);
                         this.game.add.existing(bassAttack);
                         enemies.add(bassAttack); 
                         this.canMove=true;
@@ -185,27 +185,33 @@ Bass.prototype.act = function()
                     this.moves2++;
                                       if(this.moves2==3)
                     {
+                        rand = Math.floor((Math.random() * 3));
+                        if(rand==0)
+                        {
                         this.animations.play('buster');
                         this.buster=true;
-                       
-                    }
-                    else if(this.moves2==4)
-                    {
+                        this.moves2=0;
+                        }
+                       else if(rand==1)
+                        {
                         this.animations.play('chargedattack');
                         sfx.darkcharge.play("", 0, 1, false);
                         this.moveTo(3, 1);
                         this.shadowFlame=true;
-                        this.moves=3;
+                        this.moves2=0;
                         this.canMove=false;
-                    }
-                    else if(this.moves2==5)
+                        }
+                        else if(rand==2)
                     {
                         this.animations.play('attack');
                         sfx.darksword.play("", 0, 1, false);
                         this.darkSword=true;
                         this.moveTo(3, 1);
                         this.moves2=0;
-                    }          
+                    } 
+                    }
+                    
+                             
                 }
 
                 }
@@ -219,11 +225,11 @@ Bass.prototype.damage= function (dm)
  {
 
     this.hp = this.hp - dm;
-    if(this.hp<600)
+    if(this.hp<1500)
     {
         this.delayTime=350;
     }
-    if(this.hp<300)
+    if(this.hp<800)
     {
         this.delayTime=250;
     }

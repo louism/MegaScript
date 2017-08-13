@@ -18,6 +18,7 @@ function spawnRandom(x, y, l, game)
 		case 5:
 			spawnSpikey(x, y, lvl);
 			break;
+
 		default:
 			spawnMettaur(x, y, 0);
 			break;
@@ -47,10 +48,19 @@ function spawnBass(x, y)
 
 function spawnGunner(x, y, l)
 {
+	r = Math.floor((Math.random() * 2));
+	if(l>2 && r==0)
+	{
+		spawnElemperor(x, y, l);
+	}
+	else
+	{
 	this.enemy = new Gunner(gameInstance, x, y, l);
 	gameInstance.add.existing(enemy);
     enemies.add(enemy);
+	}
 }
+
 
 
 function spawnRatton(x, y, l)
@@ -59,6 +69,13 @@ function spawnRatton(x, y, l)
 	gameInstance.add.existing(enemy);
     enemies.add(enemy);
 }
+function spawnElemperor(x, y, l)
+{
+	enemy = new Elemperor(gameInstance, x, y, l);
+	gameInstance.add.existing(enemy);
+    enemies.add(enemy);
+}
+
 
 
 function spawnVolgear(x, y, l)

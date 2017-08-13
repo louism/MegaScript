@@ -2,6 +2,8 @@ var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 var won = false;
 var lvl = 1;
 var battlesWon= 0;
+var currentChip;
+var pause;
 
 PlayState = {};
 
@@ -10,12 +12,14 @@ PlayState.preload = function ()
  {
         this.game.load.spritesheet('background', 'images/bn3panels.png', 256, 256);
         this.game.load.spritesheet('megaman', 'images/megaman.png', 90, 58);
+        this.game.load.spritesheet('chips', 'images/chips.png', 64, 56);
         this.game.load.spritesheet('spikey', 'images/spikey.png', 70, 54);
         this.game.load.spritesheet('spikey2', 'images/spikey2.png', 70, 54);
         this.game.load.spritesheet('spikey3', 'images/spikey3.png', 70, 54);
         this.game.load.spritesheet('volgear', 'images/volgear.png', 64, 54);
         this.game.load.spritesheet('volgear2', 'images/volgear2.png', 64, 54);
         this.game.load.spritesheet('volgear3', 'images/volgear3.png', 64, 54);
+        this.game.load.spritesheet('elemperor', 'images/elemperor.png', 64, 54);
         this.game.load.spritesheet('darksword', 'images/darksword.png', 100, 100);
         this.game.load.spritesheet('bass', 'images/bass.png', 64, 74);
         this.game.load.spritesheet('mettaur', 'images/met.png', 64, 64);
@@ -90,6 +94,7 @@ PlayState._loadLevel = function () {
     // spawn megaman   
      enemies = this.game.add.group();
      this._spawnCharacters();
+
    
 };
 
@@ -99,7 +104,11 @@ PlayState._spawnCharacters = function ()
     this.megaman = new Megaman(this.game, 1, 1);
     this.game.add.existing(this.megaman);
 
+    this.currentChip = new CurrentChip(this.game);
+    this.game.add.existing(this.currentChip);
+
     gameMegaman=this.megaman;
+    currentChip=this.currentChip;
     // test Mettaur
     
    spawnRandom3(this.game);
@@ -114,7 +123,10 @@ PlayState.init = function () {
         right: Phaser.KeyCode.RIGHT,
         up: Phaser.KeyCode.UP,
         down: Phaser.KeyCode.DOWN,
-        z: Phaser.KeyCode.Z
+        z: Phaser.KeyCode.Z,
+        x: Phaser.KeyCode.X,
+        enter: Phaser.KeyCode.ENTER
+
 		});
 
 
@@ -136,7 +148,7 @@ PlayState.init = function () {
 
 PlayState.update = function () {
 
-        if(!megamanBlocked && !megamanAttacking)
+        if(!megamanBlocked && !megamanAttacking) 
     {
     megamanBlocked=true;
     megamanDelay=this.game.time.now+95;    
@@ -150,11 +162,14 @@ PlayState.update = function () {
         }
     }
 
+    if(!pause)
+    {
     enemies.forEach(function(enemy)
     {
     	enemy.act();
 
     })
+}
     enemies.sort('y', Phaser.Group.SORT_ASCENDING);
 
     if(enemies.length==0 && !won)
@@ -190,7 +205,8 @@ PlayState.update = function () {
 
 PlayState._handleInput = function () 
 {
-
+    if(!pause)
+    {
 
     if (this.keys.left.isDown) { // move megaman left
         this.megaman.move(1);
@@ -207,7 +223,16 @@ PlayState._handleInput = function ()
     }
     if (this.keys.z.isDown) 
     { // Shoot
-        this.megaman.shoot();
+        this.megaman.attack();
+    }
+    else if (this.keys.x.isDown) 
+    { // Shuffle Chip
+        currentChip.next();
+    }
+    }
+    if (this.keys.enter.isDown) 
+    { // Shoot
+        pause = !pause;
     }
     if(isMobile)
     {

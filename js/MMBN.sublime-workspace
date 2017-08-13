@@ -1,0 +1,597 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"shadow",
+				"ShadowFlame"
+			],
+			[
+				"megama",
+				"megaman"
+			],
+			[
+				"megam",
+				"megaman"
+			],
+			[
+				"chip",
+				"currentChip"
+			],
+			[
+				"get",
+				"getEnemyAt"
+			],
+			[
+				"can",
+				"canAttack"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"mega",
+				"megaman"
+			],
+			[
+				"dark",
+				"darksword"
+			],
+			[
+				"Shadow",
+				"ShadowFlame"
+			],
+			[
+				"delay",
+				"delayTime"
+			],
+			[
+				"buster",
+				"busterShots"
+			],
+			[
+				"bus",
+				"busterShots"
+			],
+			[
+				"bass",
+				"bassAttack"
+			],
+			[
+				"game",
+				"gameMegaman"
+			],
+			[
+				"ratton",
+				"rattonshot"
+			],
+			[
+				"in",
+				"invincible"
+			],
+			[
+				"travel",
+				"travelDuration"
+			],
+			[
+				"tr",
+				"travelDuration"
+			],
+			[
+				"b",
+				"blast"
+			],
+			[
+				"megaman",
+				"megamanBlocked"
+			],
+			[
+				"met",
+				"megamanAttacking"
+			],
+			[
+				"offse",
+				"offsetX"
+			],
+			[
+				"mo",
+				"moveTo"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Bass.js",
+			"settings":
+			{
+				"buffer_size": 9064,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "enemies.js",
+			"settings":
+			{
+				"buffer_size": 12253,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "function Elemperor(game, x, y, level) \n{\n    this.canAttack = true;\n    this.direction = 0;\n    this.level = level;\n    // call Phaser.Sprite constructor\n\n    GameObject.call(this, game, x, y, 425, 'elemperor', 200);\n    this.name = \"elemperor\";\n    this.animations.add('attack', [3, 4, 5], 10, false);\n    this.animations.add('idle', [0, 1, 2], 10, true);\n    this.animations.play('idle');\n    // Align sprite\n    this.anchor.set(0.2, 0.5);\n\n                        this.events.onAnimationComplete.add(function () \n                    {   \n                        this.canAttack=true;\n                        this.animations.play('idle');\n                    }, this);\n\n    }\nElemperor.prototype = Object.create(GameObject.prototype);\nElemperor.prototype.constructor = Elemperor;\n\nElemperor.prototype.act = function()\n{\n    if(this.game.time.now>this.delay)\n    {\n    if(this.canAttack)\n                {\n                    if(!this.aim)\n                    {\n                        this.target = new Target(this.game, this, gameMegaman.xpos, gameMegaman.ypos);\n                        this.game.add.existing(this.target);\n                        this.aim=true;\n                        this.delay=this.game.time.now+(this.delayTime);\n                    }\n                    else\n                    {\n                    shadowFlame = new ShadowFlame(this.game, this.target.xpos, this.target.ypos);\n                    this.game.add.existing(shadowFlame);             \n                    enemies.add(shadowFlame);\n                    this.animations.play('attack');\n                    this.delay=this.game.time.now+(this.delayTime);\n                    this.canAttack=false;\n                    sfx.burn.play(\"\", 0, 0.8, false);\n                    this.aim=false;\n                    this.target.kill(false);\n                    }\n}\n                }\n}",
+			"file": "enemies2.js",
+			"file_size": 1872,
+			"file_write_time": 131461707640000000,
+			"settings":
+			{
+				"buffer_size": 1860,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "enemyspawner.js",
+			"settings":
+			{
+				"buffer_size": 1608,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "gameobjects.js",
+			"settings":
+			{
+				"buffer_size": 26989,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.js",
+			"settings":
+			{
+				"buffer_size": 9084,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/louis/MegaScript/index.html",
+		"/Users/louis/MegaScript/js/enemyspawner.js",
+		"/Users/louis/MegaScript/js/gameobjects.js",
+		"/Users/louis/MegaScript/js/enemies.js",
+		"/Users/louis/MegaScript/js/main.js",
+		"/Users/louis/MegaScript/js/enemyspawner",
+		"/Users/louis/Dropbox/Small Victories/sleek laser gun/js/main.js",
+		"/Users/louis/Desktop/MegaScript/js/main.js",
+		"/Users/louis/Desktop/MegaScript/src/mmbnsimulator/Mettaur.java",
+		"/Users/louis/Desktop/MegaScript/index.html",
+		"/Users/louis/NetBeansProjects/Bounce/src/bounce/Bounce.java",
+		"/Users/louis/ChitChat/index.html",
+		"/Users/louis/Desktop/chit/electron/README.md",
+		"/Users/louis/NetBeansProjects/Dreamplayer/src/quick/Dreamplayer.java",
+		"/Users/louis/NetBeansProjects/Dreamplayer/lib.m3u",
+		"/Users/louis/NetBeansProjects/Dreamplayer/library.lst",
+		"/Users/louis/NetBeansProjects/Dreamplayer/file.lst",
+		"/Users/louis/Desktop/ytd/ytd.py",
+		"/Users/louis/Desktop/Stages of C Compilation:",
+		"/Users/louis/bash_profile",
+		"/Users/louis/hw4-lmezzich/skey/Makefile.am",
+		"/Users/louis/hw4-lmezzich/Makefile.am",
+		"/Users/louis/hw4-lmezzich/skey.c",
+		"/Users/louis/hw4-lmezzich/skeysubr.c",
+		"/Users/louis/hw4-lmezzich/skey/test1.sh",
+		"/Users/louis/hw4-lmezzich/test1.sh",
+		"/Users/louis/hw4-lmezzich/md4.c",
+		"/Users/louis/hw4-lmezzich/put.c",
+		"/Users/louis/hw4-lmezzich/skey.h",
+		"/Users/louis/Desktop/skey-old/src/md4.c",
+		"/Users/louis/hw4-lmezzich/skey/Makefile.in",
+		"/Users/louis/hw4-lmezzich/src/skeyinit.c",
+		"/Users/louis/hw4-lmezzich/src/md4.h",
+		"/Users/louis/hw4-lmezzich/src/configure.ac",
+		"/Users/louis/Desktop/skey/src/Makefile",
+		"/Users/louis/hw4-lmezzich/src/Makefile.am",
+		"/Users/louis/hw4-lmezzich/src/buildall",
+		"/Users/louis/hw4-lmezzich/README"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"firetower",
+			"shadowflame",
+			"watertower",
+			"waterfall",
+			"shadowflame",
+			"shockwave",
+			"megamanAttacking",
+			"console.log",
+			"canattack",
+			"slash",
+			"sfx.slash",
+			"sfx.dark",
+			"slash",
+			"enemy",
+			"canAttack",
+			"shockwave",
+			"fireball",
+			"squish",
+			"animation",
+			"onanimation",
+			"animation",
+			"onanimation",
+			"busterShots",
+			"buster",
+			"damage",
+			"text",
+			"this.text",
+			"heal",
+			"console.log",
+			"gayme",
+			"winner",
+			"canattack",
+			"yo",
+			"offset",
+			"32",
+			"enemies",
+			"yoyos",
+			"this.koopas",
+			"enemies",
+			"koopas",
+			"yoyo",
+			"koopas",
+			"sfx",
+			"play",
+			"enemies",
+			"pb",
+			"fadeout",
+			"seconds",
+			"progressbar",
+			"seconds=0",
+			"mdreverse",
+			"bigendian",
+			"getpass",
+			"crypt",
+			"hexin",
+			"skeydir",
+			"setenv",
+			"solar",
+			"sgtty",
+			"trapped",
+			"sgtty_h"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"gameInstance",
+			"shift"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": true,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Bass.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9064,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6998,
+								6998
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2670.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "enemies.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12253,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5464,
+								5464
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2354.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "enemies2.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1860,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1125,
+								1125
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "enemyspawner.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1608,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								856,
+								856
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "gameobjects.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 26989,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12221,
+								12221
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7453.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "main.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9084,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7604,
+								7604
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3034.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

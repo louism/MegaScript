@@ -91,6 +91,7 @@ function Volgear(game, x, y, level)
     this.attacking=false;
     this.name = "Volgear";
     this.moves=5;
+    this.level = level;
 
     // call Phaser.Sprite constructor
         if(level==3)
@@ -117,9 +118,9 @@ function Volgear(game, x, y, level)
                     {
                         if(this.attacking)
                         {
-                        watertower = new Watertower(this.game, this, this.xpos-1, this.ypos);
-                        this.game.add.existing(watertower);
-                        enemies.add(watertower);             
+                        firetower = new Firetower(this.game, this, this.xpos-1, this.ypos, this.level);
+                        this.game.add.existing(firetower);
+                        enemies.add(firetower);             
                         sfx.shockwave.play("", 0, 0.75, false);
                         this.animations.play('idle');
                         this.attacking=false;
@@ -159,6 +160,10 @@ Volgear.prototype.act = function()
                     if(!isEnemyAt(this.xpos, this.ypos-1))
                     {
                     this.moveTo(this.xpos, this.ypos-1);
+                    }
+                    else if(!isEnemyAt(this.xpos, this.ypos+1))
+                    {
+                    this.moveTo(this.xpos, this.ypos+1);
                     }      
                     this.setDelayed();  
                     this.moves--;
@@ -167,6 +172,7 @@ Volgear.prototype.act = function()
                 {
                     this.moves=5;
                     this.animations.play('attack');
+
                     this.attacking=true;
                     this.delay=this.game.time.now+(this.delayTime);
 
