@@ -10,7 +10,7 @@ PlayState = {};
 // load game assets here
 PlayState.preload = function ()
  {
-        this.game.load.spritesheet('background', 'images/bn3panels.png', 256, 256);
+        this.game.load.spritesheet('background', 'images/bn3panels.png', 256, 188);
         this.game.load.spritesheet('megaman', 'images/megaman.png', 90, 58);
         this.game.load.spritesheet('chips', 'images/chips.png', 64, 56);
         this.game.load.spritesheet('spikey', 'images/spikey.png', 70, 54);
@@ -137,7 +137,7 @@ PlayState.init = function () {
 
           if (!isMobile) 
           { 
-          this.game.scale.setUserScale(2, 2, 0, 0);  
+          this.game.scale.setUserScale(1.5, 1.5, 0, 0);  
           this.game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
           }
           else
@@ -244,9 +244,13 @@ PlayState._handleInput = function ()
         {
         this.megaman.moveTo(travelx, travely);
         }
+        else if(travelx>2 && travely>-1)
+        {
+            this.megaman.attack();
+        }
         else if(travelx>2)
         {
-            this.megaman.shoot();
+        	currentChip.next();
         }
     }
     }
@@ -296,7 +300,7 @@ function isMegamanAt(x, y)
     return false;
 }
 window.onload = function () {
-    game = new Phaser.Game(256, 256, Phaser.CANVAS, 'game', this, false, false);
+    game = new Phaser.Game(256, 188, Phaser.CANVAS, 'game', this, false, false);
     game.state.add('play', PlayState);
    	game.state.start('play');
     gameInstance = game;
